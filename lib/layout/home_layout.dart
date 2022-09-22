@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_first/modules/archived_tasks/archived_tasks_screen.dart';
+import 'package:my_first/modules/done_tasks/done_tasks_screen.dart';
+import 'package:my_first/modules/new_tasks/new_tasks_screen.dart';
 
 class HomeLayout extends StatefulWidget {
   @override
@@ -6,14 +9,24 @@ class HomeLayout extends StatefulWidget {
 }
 
 class _HomeLayoutState extends State<HomeLayout> {
-
   int currentIndex = 0;
+  List<Widget> screens = [
+    NewTasksScreen(),
+    DoneTasksScreen(),
+    ArchivedTasksScreen(),
+  ];
+  List<String> titles = [
+    'New Tasks',
+    'Done Tasks',
+    'Archived Tasks',
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todo App'),
+        title: Text(titles[currentIndex]),
       ),
+      body: screens[currentIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: Icon(Icons.add),
@@ -21,8 +34,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
-        onTap: (index)
-        {
+        onTap: (index) {
           setState(() {
             currentIndex = index;
           });
