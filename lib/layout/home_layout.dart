@@ -1,124 +1,200 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:my_first/modules/archived_tasks/archived_tasks_screen.dart';
 import 'package:my_first/modules/done_tasks/done_tasks_screen.dart';
 import 'package:my_first/modules/new_tasks/new_tasks_screen.dart';
+import 'package:my_first/shared/components/components.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-class HomeLayout extends StatefulWidget {
-  @override
-  State<HomeLayout> createState() => _HomeLayoutState();
-}
+import '../shared/components/constants.dart';
+import '../shared/cubit/cubit.dart';
+import '../shared/cubit/states.dart';
 
-class _HomeLayoutState extends State<HomeLayout> {
-  int currentIndex = 0;
-  List<Widget> screens = [
-    NewTasksScreen(),
-    DoneTasksScreen(),
-    ArchivedTasksScreen(),
-  ];
-  List<String> titles = [
-    'New Tasks',
-    'Done Tasks',
-    'Archived Tasks',
-  ];
-  late Database database;
+// ignore: must_be_immutable
+class HomeLayout extends StatelessWidget {
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  bool isBottomSheetShown = false;
-  IconData fabIcon = Icons.add;
+  var formKey = GlobalKey<FormState>();
+
+  var titleController = TextEditingController();
+  var timeController = TextEditingController();
+  var dateController = TextEditingController();
+
+  HomeLayout({super.key});
+
   @override
-  void initState() {
-    super.initState();
-    createDatabase();
-  }
+  // void initState() {
+  //   super.initState();
+  //   createDatabase();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: Text(titles[currentIndex]),
-      ),
-      body: screens[currentIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (isBottomSheetShown) {
-            Navigator.pop(context);
-            isBottomSheetShown = false;
-            setState(() {
-              fabIcon = Icons.edit;
-            });
-          } else {
-            scaffoldKey.currentState?.showBottomSheet((context) => Container(
-                  width: double.infinity,
-                  height: 150.0,
-                  color: Colors.amber,
-                ));
-            isBottomSheetShown = true;
-            setState(() {
-              fabIcon = Icons.add;
-            });
-          }
-        },
-        child: Icon(fabIcon),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu),
-            label: 'Tasks',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle_outline),
-            label: 'Done',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.archive_outlined),
-            label: 'Archived',
-          ),
-        ],
-      ),
-    );
-  }
+    return BlocProvider(
+        create: (BuildContext context) => AppCubit()..createDatabase(),
+        child: BlocConsumer<AppCubit, AppStates>(
+            listener: (BuildContext context, AppStates state) {},
+            builder: (BuildContext context, AppStates state) {
+              AppCubit cubit = AppCubit.get(context);
+              return Scaffold(
+                key: scaffoldKey,
+                appBar: AppBar(
+                  title: Text(cubit.titles[cubit.currentIndex]),
+                ),
+                body: ConditionalBuilder(
+                  condition: true,
+                  builder: (context) => cubit.screens[cubit.currentIndex],
+                  fallback: (context) =>
+                      const Center(child: CircularProgressIndicator()),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    if (cubit.isBottomSheetShown)
+                    {
+                      if (formKey.currentState!.validate())
+                      {
+                        cubit.insertToDatabase(
+                          title: titleController.text,
+                          date: dateController.text,
+                          time: timeController.text,
+                        ).then((value) {
+                            Navigator.pop(context);
+                            clearText();
 
-  void createDatabase() async {
-    database = await openDatabase(
-      'todo.db',
-      version: 1,
-      onCreate: (database, version) {
-        print('database created');
-        database
-            .execute(
-                'CREATE TABLE tasks (id INTEGER PRIMARY KER, title TEXT, date TEXT, time TEXT, status TEXT)')
-            .then((value) {
-          print('table created');
-        }).catchError((error) {
-          print('ERROR when creating table ${error.toString()}');
-        });
-      },
-      onOpen: (database) {
-        print('database opened');
-      },
-    );
-  }
+                          });
+                      }
+                    } else {
+                      scaffoldKey.currentState
+                          ?.showBottomSheet(
+                            (context) => Container(
+                              padding: const EdgeInsets.all(20.0),
+                              color: Colors.grey[200],
+                              child: Form(
+                                key: formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    defaultFormField(
+                                      controller: titleController,
+                                      type: TextInputType.text,
+                                      validate: (String? value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'title must not be empty';
+                                        }
+                                        return null;
+                                      },
+                                      label: 'Task Title',
+                                      prefix: Icons.title,
+                                    ),
+                                    const SizedBox(
+                                      height: 15.0,
+                                    ),
+                                    defaultFormField(
+                                      controller: timeController,
+                                      type: TextInputType.datetime,
+                                      Readable: true,
+                                      onTap: () async {
+                                        TimeOfDay? pickedTime =
+                                            await showTimePicker(
+                                          context: context,
+                                          initialTime: TimeOfDay.now(),
+                                        );
+                                        // ignore: use_build_context_synchronously
+                                        timeController.text = pickedTime
+                                            ?.format(context) as String;
+                                      },
+                                      validate: (String? value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'time must not be empty';
+                                        }
+                                        return null;
+                                      },
+                                      label: 'Task Time',
+                                      prefix: Icons.watch_later_outlined,
+                                    ),
+                                    const SizedBox(
+                                      height: 15.0,
+                                    ),
+                                    defaultFormField(
+                                      controller: dateController,
+                                      type: TextInputType.datetime,
+                                      Readable: true,
+                                      onTap: () async {
+                                        DateTime? pickedDate =
+                                            await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime.now(),
+                                          lastDate:
+                                              DateTime.parse('2023-12-31'),
+                                        );
+                                        if (pickedDate != null) {
+                                          print(
+                                              pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                          String formattedDate =
+                                              DateFormat.yMMMMd('en_US')
+                                                  .format(pickedDate);
+                                          print(
+                                              formattedDate); //formatted date output using intl package =>  2021-03-16
+                                             dateController.text =
+                                                 formattedDate; //set output date to TextFormField value.
 
-  void insertToDatabase() async {
-    await database.transaction((txn) async {
-      await txn
-          .rawInsert(
-        'INSERT INTO tasks(title, date, time, status) VALUES("first task", "552","895", "new")',
-      )
-          .then((value) {
-        print('$value inserted successfully');
-      }).catchError((error) {
-        print('ERROR when inserting New record ${error.toString()}');
-      });
-    });
+                                        } else {
+                                          print("Date is not selected");
+                                        }
+                                      },
+                                      validate: (String? value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'date must not be empty';
+                                        }
+                                        return null;
+                                      },
+                                      label: 'Task Date',
+                                      prefix: Icons.calendar_today,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                          .closed
+                          .then((value) {
+                        cubit.changeIcon(isShow: false, icon: Icons.edit);
+                      });
+                      cubit.changeIcon(isShow: true, icon: Icons.add);
+                    }
+                  },
+                  child: Icon(cubit.fabIcon),
+                ),
+                bottomNavigationBar: BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  currentIndex: cubit.currentIndex,
+                  onTap: (index) {
+                    cubit.ChangeIndex(index);
+                  },
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.menu),
+                      label: 'Tasks',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.check_circle_outline),
+                      label: 'Done',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.archive_outlined),
+                      label: 'Archived',
+                    ),
+                  ],
+                ),
+              );
+            }));
+  }
+  void clearText() {
+    titleController.clear();
+    timeController.clear();
+    dateController.clear();
   }
 }

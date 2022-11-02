@@ -1,20 +1,59 @@
 
 
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_first/shared/components/components.dart';
+import 'package:my_first/shared/cubit/cubit.dart';
+import 'package:my_first/shared/cubit/states.dart';
+
+import '../../shared/components/constants.dart';
 
 class NewTasksScreen extends StatelessWidget {
-  const NewTasksScreen({Key? key}) : super(key: key);
+  const NewTasksScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'New Tasks',
-        style: TextStyle(
-          fontSize: 25.0,
-          fontWeight:  FontWeight.bold,
-        ),
-      ),
-    );
+
+     return BlocConsumer<AppCubit,AppStates>(
+       listener:(context, state) {} ,
+       builder: (context, state) {
+         var tasks = AppCubit
+             .get(context)
+             .newTasks;
+         return ConditionalBuilder(
+           condition: tasks.isNotEmpty ,
+           builder: (context) => ListView.separated(
+             itemBuilder: (context, index) => buildTaskItem(tasks[index], context),
+             separatorBuilder: (context, index) =>
+                 Container(
+                   height: 1.0,
+                   color: Colors.grey[300],
+                 ),
+             itemCount: tasks.length,
+           ),
+           fallback: (context) => Center(
+             child: Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+                 children: const [
+                 Icon(
+                     Icons.menu,
+                 size: 90.0,
+                   color: Colors.black26,
+                 ),
+                 Text('No Tasks yet, Please Add Some Tasks',
+                     style:TextStyle(
+                       fontSize: 16.0,
+                       fontWeight: FontWeight.bold,
+                       color: Colors.black38,
+                     ),
+                 ),
+               ]
+         ),
+           ),
+
+         );
+       },
+     );
   }
 }
