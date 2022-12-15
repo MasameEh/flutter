@@ -9,9 +9,9 @@ import 'package:my_first/shared/components/components.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import '../shared/components/constants.dart';
-import '../shared/cubit/cubit.dart';
-import '../shared/cubit/states.dart';
+import '../../shared/components/constants.dart';
+import '../../shared/cubit/cubit.dart';
+import '../../shared/cubit/states.dart';
 
 // ignore: must_be_immutable
 class HomeLayout extends StatelessWidget {
