@@ -6,6 +6,7 @@ import 'package:my_first/modules/bmi/BMI_screen.dart';
 import 'package:my_first/modules/messenger/messenger_with_list.dart';
 import 'package:my_first/modules/bmi/result_screen.dart';
 import 'package:my_first/shared/bloc_observer.dart';
+import 'package:my_first/shared/network/remote/dio_helper.dart';
 import 'layout/news_app/news_layout.dart';
 import 'modules/login/loG_In.dart';
 import 'modules/messenger/messenger_screen.dart';
@@ -15,6 +16,7 @@ import 'modules/messenger/messenger_screen.dart';
 
 void main() async{
   Bloc.observer = MyBlocObserver();
+  DioHelper.init();
   runApp( MyApp());
 }
 
@@ -50,6 +52,7 @@ class MyApp extends StatelessWidget {
           selectedItemColor: Colors.deepOrange,
         ),
       ),
+      themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       home: NewsLayout() ,
     );

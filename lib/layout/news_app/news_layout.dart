@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_first/layout/news_app/cubit/cubit.dart';
 import 'package:my_first/layout/news_app/cubit/states.dart';
+import 'package:my_first/shared/network/remote/dio_helper.dart';
 
 class NewsLayout extends StatelessWidget {
   const NewsLayout({Key? key}) : super(key: key);
