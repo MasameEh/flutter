@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../layout/todo_app/cubit/cubit.dart';
+import '../../layout/todo_app/cubit/states.dart';
 import '../../shared/components/components.dart';
-import '../../shared/cubit/cubit.dart';
-import '../../shared/cubit/states.dart';
 
 class ArchivedTasksScreen extends StatelessWidget {
   const ArchivedTasksScreen({super.key});

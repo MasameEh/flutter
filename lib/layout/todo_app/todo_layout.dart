@@ -2,6 +2,8 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:my_first/layout/todo_app/cubit/cubit.dart';
+import 'package:my_first/layout/todo_app/cubit/states.dart';
 import 'package:my_first/modules/archived_tasks/archived_tasks_screen.dart';
 import 'package:my_first/modules/done_tasks/done_tasks_screen.dart';
 import 'package:my_first/modules/new_tasks/new_tasks_screen.dart';
@@ -10,8 +12,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import '../../shared/components/constants.dart';
-import '../../shared/cubit/cubit.dart';
-import '../../shared/cubit/states.dart';
+
 
 // ignore: must_be_immutable
 class HomeLayout extends StatelessWidget {

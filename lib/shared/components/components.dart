@@ -1,6 +1,8 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
-import 'package:my_first/shared/cubit/cubit.dart';
+
+import '../../layout/todo_app/cubit/cubit.dart';
+
 
 Widget defaultButton({
   double width = double.infinity,

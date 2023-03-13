@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_first/image.dart';
 import 'package:my_first/layout/todo_app/todo_layout.dart';
 import 'package:my_first/modules/bmi/BMI_screen.dart';
 import 'package:my_first/modules/messenger/messenger_with_list.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      home: NewsLayout() ,
+      home: imagescreen() ,
     );
   }
 }

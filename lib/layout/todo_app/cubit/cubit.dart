@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_first/shared/cubit/states.dart';
+import 'package:my_first/layout/todo_app/cubit/states.dart';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../../modules/archived_tasks/archived_tasks_screen.dart';
-import '../../modules/done_tasks/done_tasks_screen.dart';
-import '../../modules/new_tasks/new_tasks_screen.dart';
+
+import '../../../modules/archived_tasks/archived_tasks_screen.dart';
+import '../../../modules/done_tasks/done_tasks_screen.dart';
+import '../../../modules/new_tasks/new_tasks_screen.dart';
+
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
